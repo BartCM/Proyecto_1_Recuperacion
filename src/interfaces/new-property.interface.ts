@@ -1,8 +1,8 @@
 export interface NewProperty {
-  title: FormDataEntryValue | null;
-  description: FormDataEntryValue | null;
+  title: string;
+  description: string;
   townId: number;
-  address: FormDataEntryValue | null;
+  address: string;
   price: number;
   sqmeters: number;
   numRooms: number;

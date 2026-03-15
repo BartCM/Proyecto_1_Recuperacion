@@ -1,33 +1,49 @@
 export class Http {
-  async ajax<T>(method: string, url: string, body: BodyInit | object | null = null): Promise<T | null> {
-    const json = body && ! (body instanceof FormData);
-    const headers : HeadersInit = body && json ? { "Content-Type": "application/json" } : {};
-    const resp = await fetch(url, { method, headers, body : json ? JSON.stringify(body) : (body as BodyInit | null) });
+  async ajax<T>(
+    method: string,
+    url: string,
+    headers?: HeadersInit,
+    body?: string
+  ): Promise<T> {
+    const token = localStorage.getItem("token");
+    if (token) headers = { ...headers, Authorization: "Bearer " + token };
 
-    if (!resp.ok) {
-      throw new Error(resp.statusText);
-    }
-
-    if (resp.status !== 204) {
-      return (await resp.json());
+    const resp = await fetch(url, { method, headers, body });
+    if (!resp.ok) throw await resp.json();
+    if (resp.status != 204) {
+      return (await resp.json()) as T;
     } else {
-      return null; // 204 implica una respuesta sin datos
+      return null as T;
     }
   }
 
-  get<T>(url: string): Promise<T | null> {
-    return this.ajax("GET", url);
+  get<T>(url: string): Promise<T> {
+    return this.ajax<T>("GET", url);
   }
 
-  post<T>(url: string, body: BodyInit | object): Promise<T | null> {
-    return this.ajax("POST", url, body);
+  post<T, U>(url: string, data?: U): Promise<T> {
+    return this.ajax<T>(
+      "POST",
+      url,
+      {
+        "Content-Type": "application/json",
+      },
+      JSON.stringify(data)
+    );
   }
 
-  put<T>(url: string, body: BodyInit | object): Promise<T | null> {
-    return this.ajax("PUT", url,  body);
+  put<T, U>(url: string, data: U): Promise<T> {
+    return this.ajax<T>(
+      "PUT",
+      url,
+      {
+        "Content-Type": "application/json",
+      },
+      JSON.stringify(data)
+    );
   }
 
-  delete<T>(url: string): Promise<T | null> {
-    return this.ajax("DELETE", url);
+  delete<T>(url: string): Promise<T> {
+    return this.ajax<T>("DELETE", url);
   }
 }

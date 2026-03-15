@@ -1,12 +1,18 @@
 import { Feature } from "ol";
 import { Point } from "ol/geom.js";
-import { MapService } from "./map.service.ts";
-import { MyGeolocation } from "./my-geolocation.ts";
-import { PropertiesService } from "./properties.service.ts";
-import { ProvincesService } from "./provinces.service.ts";
-import { NewProperty } from "./interfaces/new-property.interface";
-import { Town } from "./interfaces/town.interface.ts";
-import { Province } from "./interfaces/province.interface.ts";
+import { MapService } from "./map.service";
+import { MyGeolocation } from "./my-geolocation";
+import { PropertiesService } from "./properties.service";
+import { ProvincesService } from "./provinces.service";
+import type { NewProperty } from "./interfaces/new-property.interface";
+import type { Town } from "./interfaces/town.interface";
+import type { Province } from "./interfaces/province.interface";
+
+const token = localStorage.getItem("token");
+
+if (!token) {
+  location.assign("login.html");
+}
 
 const propertyForm = document.getElementById("property-form") as HTMLFormElement | null;
 const mainPhotoInput = document.getElementById("mainPhoto") as HTMLInputElement | null;
@@ -21,10 +27,15 @@ let mapService: MapService | null = null;
 let marker: Feature<Point> | null = null;
 let towns: Town[] = [];
 
+function getFormDataString(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === "string" ? value : "";
+}
+
 mainPhotoInput?.addEventListener("change", () => {
-  if (!mainPhotoInput || !imagePreview){
+  if (!mainPhotoInput || !imagePreview) {
     return;
-  } 
+  }
 
   const file = mainPhotoInput.files?.[0];
   imagePreview.src = "";
@@ -34,7 +45,9 @@ mainPhotoInput?.addEventListener("change", () => {
     if (!file.type.startsWith("image")) {
       mainPhotoInput.setCustomValidity("File must be an image");
     } else if (file.size > 200000) {
-      mainPhotoInput.setCustomValidity("You can't add an image larger than 200KB");
+      mainPhotoInput.setCustomValidity(
+        "You can't add an image larger than 200KB"
+      );
     } else {
       mainPhotoInput.setCustomValidity("");
 
@@ -42,7 +55,7 @@ mainPhotoInput?.addEventListener("change", () => {
       reader.readAsDataURL(file);
 
       reader.addEventListener("load", () => {
-        imagePreview.src = reader.result as string;
+        imagePreview.src = typeof reader.result === "string" ? reader.result : "";
         imagePreview.classList.remove("hidden");
       });
     }
@@ -54,24 +67,25 @@ mainPhotoInput?.addEventListener("change", () => {
 propertyForm?.addEventListener("submit", async (event: SubmitEvent) => {
   event.preventDefault();
 
-  if (!propertyForm || !imagePreview){
+  if (!propertyForm || !imagePreview) {
     return;
-  } 
-  if (!propertyForm.reportValidity()){
+  }
+
+  if (!propertyForm.reportValidity()) {
     return;
-  } 
+  }
 
   const formData = new FormData(propertyForm);
 
   const propertyData: NewProperty = {
-    title: formData.get("title"),
-    description: formData.get("description"),
-    townId: Number(formData.get("town")),
-    address: formData.get("address"),
-    price: Number(formData.get("price")),
-    sqmeters: Number(formData.get("sqmeters")),
-    numRooms: Number(formData.get("numRooms")),
-    numBaths: Number(formData.get("numBaths")),
+    title: getFormDataString(formData, "title"),
+    description: getFormDataString(formData, "description"),
+    townId: Number(formData.get("town") ?? 0),
+    address: getFormDataString(formData, "address"),
+    price: Number(formData.get("price") ?? 0),
+    sqmeters: Number(formData.get("sqmeters") ?? 0),
+    numRooms: Number(formData.get("numRooms") ?? 0),
+    numBaths: Number(formData.get("numBaths") ?? 0),
     mainPhoto: imagePreview.src,
   };
 
@@ -80,18 +94,21 @@ propertyForm?.addEventListener("submit", async (event: SubmitEvent) => {
 });
 
 provincesSelect?.addEventListener("change", () => {
-  if (!provincesSelect){
+  if (!provincesSelect) {
     return;
   }
-  loadTowns(Number(provincesSelect.value));
+
+  void loadTowns(Number(provincesSelect.value));
 });
 
 townsSelect?.addEventListener("change", () => {
-  if (!townsSelect || !mapService || !marker){
+  if (!townsSelect || !mapService || !marker) {
     return;
-  } 
+  }
 
-  const selectedTown = towns.find((t: Town) => t.id === Number(townsSelect.value));
+  const selectedTown = towns.find(
+    (t: Town) => t.id === Number(townsSelect.value)
+  );
   const latitude = selectedTown?.latitude ?? 0;
   const longitude = selectedTown?.longitude ?? 0;
 
@@ -100,29 +117,33 @@ townsSelect?.addEventListener("change", () => {
 });
 
 async function loadProvinces(): Promise<void> {
-  if (!provincesSelect){
+  if (!provincesSelect) {
     return;
-  } 
+  }
 
   const provinces: Province[] = await provincesService.getProvinces();
 
-  const options = Array.from(provinces).map((p: Province) => {
+  const options = provinces.map((p: Province) => {
     const option = document.createElement("option");
     option.value = String(p.id);
     option.append(p.name);
     return option;
   });
 
+  if (!provincesSelect.firstElementChild) {
+    return;
+  }
+
   provincesSelect.replaceChildren(
-    provincesSelect.firstElementChild as Element,
+    provincesSelect.firstElementChild,
     ...options
   );
 }
 
 async function loadTowns(idProvince: number): Promise<void> {
-  if (!townsSelect){
+  if (!townsSelect) {
     return;
-  } 
+  }
 
   towns = await provincesService.getTowns(idProvince);
 
@@ -133,23 +154,29 @@ async function loadTowns(idProvince: number): Promise<void> {
     return option;
   });
 
+  if (!townsSelect.firstElementChild) {
+    return;
+  }
+
   townsSelect.replaceChildren(
-    townsSelect.firstElementChild as Element,
+    townsSelect.firstElementChild,
     ...options
   );
 }
 
 async function loadMap(): Promise<void> {
-  const coords = await MyGeolocation.getLocation();
+  const coords = (await MyGeolocation.getLocation()) as GeolocationCoordinates;
+
   mapService = new MapService(
     { latitude: coords.latitude, longitude: coords.longitude },
     "map"
   );
+
   marker = mapService.createMarker({
     latitude: coords.latitude,
     longitude: coords.longitude,
   });
 }
 
-loadProvinces();
-loadMap();
+void loadProvinces();
+void loadMap();
