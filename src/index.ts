@@ -1,21 +1,38 @@
-import { PropertiesService, Property } from "./properties.service.ts";
+import { PropertiesService } from "./properties.service";
+import type { Property } from "./interfaces/property.interface";
 
-const propertyListings = document.getElementById("property-listings") as HTMLElement | null;
-const cardTemplate = document.getElementById("property-card-template") as HTMLTemplateElement | null;
+const token = localStorage.getItem("token");
+
+if (!token) {
+  location.assign("login.html");
+}
+
+const propertyListings = document.getElementById("property-listings");
+const cardTemplate = document.getElementById("property-card-template");
 
 const propertiesService = new PropertiesService();
 
 /**
  * Creates a new property card and appends it to the DOM
- * @param {object} propertyData - An object with property's data
+ * @param propertyData An object with property's data
  */
 function createAndAppendCard(propertyData: Property): void {
-  if (!cardTemplate || !propertyListings){
+  if (
+    !(propertyListings instanceof HTMLElement) ||
+    !(cardTemplate instanceof HTMLTemplateElement)
+  ) {
+    throw new Error("DOM elements not found");
+  }
+
+  const fragment = cardTemplate.content.cloneNode(true);
+
+  if (!(fragment instanceof DocumentFragment)) {
     return;
   }
-  const fragment = cardTemplate.content.cloneNode(true) as DocumentFragment;
-  const cardClone = fragment.firstElementChild as HTMLElement;
-  if (!cardClone){
+
+  const cardClone = fragment.firstElementChild;
+
+  if (!(cardClone instanceof HTMLElement)) {
     return;
   }
 
@@ -25,46 +42,48 @@ function createAndAppendCard(propertyData: Property): void {
     maximumFractionDigits: 0,
   }).format(propertyData.price);
 
-  const title = cardClone.querySelector(".property-title") as HTMLElement | null;
-  title?.append(propertyData.title)
+  const title = cardClone.querySelector(".property-title");
+  title?.append(propertyData.title);
 
-  const location = cardClone.querySelector(".property-location") as HTMLElement | null;
-  location?.append(`${propertyData.address}, ${propertyData.town.name}, ${propertyData.town.province.name}`);
+  const location = cardClone.querySelector(".property-location");
+  location?.append(
+    `${propertyData.address}, ${propertyData.town.name}, ${propertyData.town.province.name}`
+  );
 
-  const price = cardClone.querySelector(".property-price") as HTMLElement | null;
+  const price = cardClone.querySelector(".property-price");
   price?.append(formattedPrice);
 
-  const description = cardClone.querySelector(".property-description") as HTMLElement | null;
+  const description = cardClone.querySelector(".property-description");
   description?.append(propertyData.description);
 
-  const sqmeters = cardClone.querySelector(".property-sqmeters") as HTMLElement | null;
+  const sqmeters = cardClone.querySelector(".property-sqmeters");
   sqmeters?.append(`${propertyData.sqmeters} sqm`);
 
-  const rooms = cardClone.querySelector(".property-rooms") as HTMLElement | null;
+  const rooms = cardClone.querySelector(".property-rooms");
   rooms?.append(`${propertyData.numRooms} beds`);
 
-  const baths = cardClone.querySelector(".property-baths") as HTMLElement | null;
+  const baths = cardClone.querySelector(".property-baths");
   baths?.append(`${propertyData.numBaths} baths`);
 
-  const image = cardClone.querySelector(".property-image") as HTMLImageElement | null;
-  if(image){
+  const image = cardClone.querySelector(".property-image");
+  if (image instanceof HTMLImageElement) {
     image.src = propertyData.mainPhoto;
   }
 
-  const deleteButon = cardClone.querySelector(".btn-delete") as HTMLButtonElement | null;
-  if(deleteButon){
-    deleteButon.addEventListener('click', async () => {
-    await propertiesService.deleteProperty(propertyData.id);
-    cardClone.remove();
+  const deleteButton = cardClone.querySelector(".btn-delete");
+  if (deleteButton instanceof HTMLElement) {
+    deleteButton.addEventListener("click", async () => {
+      await propertiesService.deleteProperty(propertyData.id);
+      cardClone.remove();
     });
   }
 
   propertyListings.append(cardClone);
 }
 
-async function getProperties() {
-    const properties = await propertiesService.getProperties();
-    properties.forEach((p: Property) => createAndAppendCard(p));
+async function getProperties(): Promise<void> {
+  const properties = await propertiesService.getProperties();
+  properties.forEach((p: Property) => createAndAppendCard(p));
 }
 
-getProperties();
+void getProperties();
