@@ -1,7 +1,9 @@
-import { SERVER } from "./constants";
-import { Http } from "./http.class";
-import type { LoginData } from "./interfaces/login.interface";
-import type { LoginResponse } from "./interfaces/login-response.interface";
+import { SERVER } from "../constants";
+import { Http } from "../http.class";
+import type { LoginResponse } from "../interfaces/login-response.interface";
+import type { LoginData } from "../interfaces/login.interface";
+import type { RegisterData } from "../interfaces/register.interface";
+
 
 export class AuthService {
   #http: Http = new Http();
@@ -18,6 +20,10 @@ export class AuthService {
 
     localStorage.setItem("token", resp.accessToken);
     return resp.accessToken;
+  }
+
+  async register(data: RegisterData): Promise<void> {
+    await this.#http.post<unknown, RegisterData>(`${SERVER}/auth/register`, data);
   }
 
   checkToken(): boolean {

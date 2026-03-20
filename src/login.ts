@@ -1,5 +1,10 @@
-import { AuthService } from "./auth.service";
 import type { LoginData } from "./interfaces/login.interface";
+import { AuthService } from "./services/auth.service";
+import { redirectIfLogged, setupLogout } from "./auth.guard";
+import Swal from "sweetalert2";
+
+redirectIfLogged();
+setupLogout();
 
 const loginForm = document.getElementById("login-form") as HTMLFormElement | null;
 const emailInput = document.getElementById("email") as HTMLInputElement | null;
@@ -7,14 +12,26 @@ const passwordInput = document.getElementById("password") as HTMLInputElement | 
 
 const authService = new AuthService();
 
-if (authService.checkToken()) {
-  location.assign("index.html");
-}
-
 loginForm?.addEventListener("submit", async (event: SubmitEvent) => {
   event.preventDefault();
 
   if (!loginForm || !emailInput || !passwordInput) {
+    return;
+  }
+
+  const password = passwordInput.value.trim();
+
+  passwordInput.setCustomValidity("");
+
+  if (password.length === 0) {
+    passwordInput.setCustomValidity("La contraseña no puede estar vacía");
+    passwordInput.reportValidity();
+    return;
+  }
+
+  if (password.length < 4) {
+    passwordInput.setCustomValidity("La contraseña debe tener al menos 4 caracteres");
+    passwordInput.reportValidity();
     return;
   }
 
@@ -24,7 +41,7 @@ loginForm?.addEventListener("submit", async (event: SubmitEvent) => {
 
   const loginData: LoginData = {
     email: emailInput.value.trim(),
-    password: passwordInput.value,
+    password,
   };
 
   try {
@@ -37,10 +54,18 @@ loginForm?.addEventListener("submit", async (event: SubmitEvent) => {
       "error" in error &&
       typeof error.error === "string"
     ) {
-      alert(error.error);
+      await Swal.fire({
+        icon: "error",
+        title: "Login error",
+        text: error.error,
+      });
       return;
     }
 
-    alert("Error al iniciar sesión");
+      await Swal.fire({
+      icon: "error",
+      title: "Login error",
+      text: "Error al iniciar sesión",
+    });
   }
 });
