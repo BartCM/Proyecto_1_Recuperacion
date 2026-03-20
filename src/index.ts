@@ -1,6 +1,6 @@
 
 import type { Property } from "./interfaces/property.interface";
-import { requireAuth, setupLogout } from "./auth.guard";
+import { setupLogout } from "./auth.guard";
 import { PropertiesService } from "./services/properties.service";
 
 //requireAuth();
