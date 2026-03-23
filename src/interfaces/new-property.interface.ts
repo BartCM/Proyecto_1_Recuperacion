@@ -4,10 +4,8 @@ export interface NewProperty {
   townId: number;
   address: string;
   price: number;
-  address: string;
   sqmeters: number;
   numRooms: number;
   numBaths: number;
-  townId: number;
   mainPhoto: string;
 }
