@@ -1,18 +1,16 @@
 import { Feature } from "ol";
 import { Point } from "ol/geom.js";
-import { MapService } from "./map.service";
+import { MapService } from "./services/map.service";
 import { MyGeolocation } from "./my-geolocation";
-import { PropertiesService } from "./properties.service";
-import { ProvincesService } from "./provinces.service";
 import type { NewProperty } from "./interfaces/new-property.interface";
 import type { Town } from "./interfaces/town.interface";
 import type { Province } from "./interfaces/province.interface";
+import { PropertiesService } from "./services/properties.service";
+import { ProvincesService } from "./services/provinces.service";
+import { requireAuth, setupLogout } from "./auth.guard";
 
-const token = localStorage.getItem("token");
-
-if (!token) {
-  location.assign("login.html");
-}
+requireAuth();
+setupLogout();
 
 const propertyForm = document.getElementById("property-form") as HTMLFormElement | null;
 const mainPhotoInput = document.getElementById("mainPhoto") as HTMLInputElement | null;

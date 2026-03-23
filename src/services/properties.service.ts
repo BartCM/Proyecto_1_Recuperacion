@@ -1,7 +1,8 @@
-import { SERVER } from "./constants.js";
-import { Http } from "./http.class.js";
-import type { NewProperty } from "./interfaces/new-property.interface.js";
-import type { Property } from "./interfaces/property.interface.js";
+import { SERVER } from "../constants";
+import { Http } from "../http.class";
+import type { NewProperty } from "../interfaces/new-property.interface";
+import type { Property } from "../interfaces/property.interface";
+
 
 interface GetPropertiesResponse {
   properties: Property[];

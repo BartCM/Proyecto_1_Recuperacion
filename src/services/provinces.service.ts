@@ -1,7 +1,8 @@
-import { SERVER } from "./constants.js";
-import { Http } from "./http.class.js";
-import { Province } from "./interfaces/province.interface.js";
-import { Town } from "./interfaces/town.interface.js";
+import { SERVER } from "../constants";
+import { Http } from "../http.class";
+import { Province } from "../interfaces/province.interface";
+import { Town } from "../interfaces/town.interface";
+
 
 export class ProvincesService {
   #http: Http = new Http();

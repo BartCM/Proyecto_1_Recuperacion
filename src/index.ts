@@ -1,11 +1,10 @@
-import { PropertiesService } from "./properties.service";
+
 import type { Property } from "./interfaces/property.interface";
+import { setupLogout } from "./auth.guard";
+import { PropertiesService } from "./services/properties.service";
 
-const token = localStorage.getItem("token");
-
-if (!token) {
-  location.assign("login.html");
-}
+//requireAuth();
+setupLogout();
 
 const propertyListings = document.getElementById("property-listings");
 const cardTemplate = document.getElementById("property-card-template");
