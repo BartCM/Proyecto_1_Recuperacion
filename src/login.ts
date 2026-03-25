@@ -1,10 +1,9 @@
 import type { LoginData } from "./interfaces/login.interface";
 import { AuthService } from "./services/auth.service";
-import { redirectIfLogged, setupLogout } from "./auth.guard";
+import { redirectIfLogged } from "./auth.guard";
 import Swal from "sweetalert2";
 
 redirectIfLogged();
-setupLogout();
 
 const loginForm = document.getElementById("login-form") as HTMLFormElement | null;
 const emailInput = document.getElementById("email") as HTMLInputElement | null;

@@ -1,10 +1,9 @@
 import Swal from "sweetalert2";
-import { redirectIfLogged, setupLogout } from "./auth.guard";
+import { redirectIfLogged } from "./auth.guard";
 import { AuthService } from "./services/auth.service";
 import type { RegisterData } from "./interfaces/register.interface";
 
 redirectIfLogged();
-setupLogout();
 
 const registerForm = document.getElementById("register-form") as HTMLFormElement | null;
 const nameInput = document.getElementById("name") as HTMLInputElement | null;

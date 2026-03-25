@@ -5,7 +5,10 @@ import type { Property } from "../interfaces/property.interface";
 
 
 interface GetPropertiesResponse {
+  forEach(arg0: (p: Property) => void): unknown;
+  length: number;
   properties: Property[];
+  more: boolean;
 }
 
 interface InsertPropertyResponse {
@@ -15,11 +18,24 @@ interface InsertPropertyResponse {
 export class PropertiesService {
   #http: Http = new Http();
 
-  async getProperties(): Promise<Property[]> {
+  async getProperties(
+    page: number = 1,
+    province: string = "0",
+    search: string = "",
+    seller: string = "0"
+  ): Promise<GetPropertiesResponse> {
+    const params = new URLSearchParams({
+      page: String(page),
+      province,
+      search,
+      seller,
+    });
+
     const resp = await this.#http.get<GetPropertiesResponse>(
-      `${SERVER}/properties`
+      `${SERVER}/properties?${params.toString()}`
     );
-    return resp?.properties ?? [];
+
+    return resp ?? { properties: [], more: false };
   }
 
   async insertProperty(property: NewProperty): Promise<Property | null> {
@@ -31,7 +47,7 @@ export class PropertiesService {
   }
 
   async deleteProperty(id: number): Promise<void> {
-    await this.#http.delete(`${SERVER}/properties/${id}`);
+    await this.#http.delete<void>(`${SERVER}/properties/${id}`);
   }
 }
 

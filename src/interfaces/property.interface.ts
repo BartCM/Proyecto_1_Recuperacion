@@ -11,4 +11,5 @@ export interface Property {
   numBaths: number;
   mainPhoto: string;
   town: Town;
+  mine?: boolean;
 }

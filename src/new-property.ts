@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import { Feature } from "ol";
 import { Point } from "ol/geom.js";
 import { MapService } from "./services/map.service";
@@ -7,10 +8,8 @@ import type { Town } from "./interfaces/town.interface";
 import type { Province } from "./interfaces/province.interface";
 import { PropertiesService } from "./services/properties.service";
 import { ProvincesService } from "./services/provinces.service";
-import { requireAuth, setupLogout } from "./auth.guard";
-
-requireAuth();
-setupLogout();
+import { AuthService } from "./services/auth.service";
+import { generateTitle, translateToEnglish } from "./ai-tools";
 
 const propertyForm = document.getElementById("property-form") as HTMLFormElement | null;
 const mainPhotoInput = document.getElementById("mainPhoto") as HTMLInputElement | null;
@@ -18,12 +17,36 @@ const imagePreview = document.getElementById("image-preview") as HTMLImageElemen
 const provincesSelect = document.getElementById("province") as HTMLSelectElement | null;
 const townsSelect = document.getElementById("town") as HTMLSelectElement | null;
 
+const descriptionInput = document.getElementById("description") as HTMLTextAreaElement | null;
+const titleInput = document.getElementById("title") as HTMLInputElement | null;
+const translateButton = document.getElementById("translate-button") as HTMLButtonElement | null;
+const generateButton = document.getElementById("generate-button") as HTMLButtonElement | null;
+const logoutLink = document.getElementById("logout-link");
+
 const propertiesService = new PropertiesService();
 const provincesService = new ProvincesService();
+const authService = new AuthService();
 
 let mapService: MapService | null = null;
 let marker: Feature<Point> | null = null;
 let towns: Town[] = [];
+
+function checkAuth(): void {
+  if (!authService.checkToken()) {
+    location.assign("index.html");
+  }
+}
+
+function setupLogoutButton(): void {
+  if (!(logoutLink instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  logoutLink.addEventListener("click", () => {
+    authService.logout();
+    location.assign("login.html");
+  });
+}
 
 function getFormDataString(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -53,12 +76,62 @@ mainPhotoInput?.addEventListener("change", () => {
       reader.readAsDataURL(file);
 
       reader.addEventListener("load", () => {
-        imagePreview.src = typeof reader.result === "string" ? reader.result : "";
+        imagePreview.src =
+          typeof reader.result === "string" ? reader.result : "";
         imagePreview.classList.remove("hidden");
       });
     }
 
     mainPhotoInput.reportValidity();
+  }
+});
+
+translateButton?.addEventListener("click", async () => {
+  if (!descriptionInput) {
+    return;
+  }
+
+  try {
+    const translated = await translateToEnglish(descriptionInput.value);
+    descriptionInput.value = translated;
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Translation error";
+
+    await Swal.fire({
+      icon: "error",
+      title: "Translation error",
+      text: message,
+    });
+  }
+});
+
+generateButton?.addEventListener("click", async () => {
+  if (!descriptionInput || !titleInput) {
+    return;
+  }
+
+  if (descriptionInput.value.trim().length < 20) {
+    await Swal.fire({
+      icon: "error",
+      title: "Generation error",
+      text: "Description must contain at least 20 characters",
+    });
+    return;
+  }
+
+  try {
+    const generated = await generateTitle(descriptionInput.value);
+    titleInput.value = generated;
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Title generation error";
+
+    await Swal.fire({
+      icon: "error",
+      title: "Generation error",
+      text: message,
+    });
   }
 });
 
@@ -87,8 +160,19 @@ propertyForm?.addEventListener("submit", async (event: SubmitEvent) => {
     mainPhoto: imagePreview.src,
   };
 
-  await propertiesService.insertProperty(propertyData);
-  location.assign("index.html");
+  try {
+    await propertiesService.insertProperty(propertyData);
+    location.assign("index.html");
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Could not create property";
+
+    await Swal.fire({
+      icon: "error",
+      title: "Create property error",
+      text: message,
+    });
+  }
 });
 
 provincesSelect?.addEventListener("change", () => {
@@ -132,10 +216,7 @@ async function loadProvinces(): Promise<void> {
     return;
   }
 
-  provincesSelect.replaceChildren(
-    provincesSelect.firstElementChild,
-    ...options
-  );
+  provincesSelect.replaceChildren(provincesSelect.firstElementChild, ...options);
 }
 
 async function loadTowns(idProvince: number): Promise<void> {
@@ -156,25 +237,18 @@ async function loadTowns(idProvince: number): Promise<void> {
     return;
   }
 
-  townsSelect.replaceChildren(
-    townsSelect.firstElementChild,
-    ...options
-  );
+  townsSelect.replaceChildren(townsSelect.firstElementChild, ...options);
 }
 
 async function loadMap(): Promise<void> {
   const coords = (await MyGeolocation.getLocation()) as GeolocationCoordinates;
 
-  mapService = new MapService(
-    { latitude: coords.latitude, longitude: coords.longitude },
-    "map"
-  );
+  mapService = new MapService({ latitude: coords.latitude, longitude: coords.longitude },"map");
 
-  marker = mapService.createMarker({
-    latitude: coords.latitude,
-    longitude: coords.longitude,
-  });
+  marker = mapService.createMarker({latitude: coords.latitude,longitude: coords.longitude,});
 }
 
+checkAuth();
+setupLogoutButton();
 void loadProvinces();
 void loadMap();
