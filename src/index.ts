@@ -3,6 +3,7 @@ import type { Province } from "./interfaces/province.interface";
 import { PropertiesService } from "./services/properties.service";
 import { ProvincesService } from "./services/provinces.service";
 import { AuthService } from "./services/auth.service";
+import { UsersService } from "./services/users.service";
 
 const loginLink = document.getElementById("login-link");
 const newPropertyLink = document.getElementById("new-property-link");
@@ -19,11 +20,13 @@ const loadMoreButton = document.getElementById("load-more-btn") as HTMLButtonEle
 const propertiesService = new PropertiesService();
 const provincesService = new ProvincesService();
 const authService = new AuthService();
+const usersService = new UsersService();
 
 let currentPage = 1;
 let currentSearch = "";
 let currentProvince = "0";
 let currentSeller = "0";
+let currentSellerName = "";
 
 const urlParams = new URLSearchParams(window.location.search);
 currentSeller = urlParams.get("seller") ?? "0";
@@ -168,6 +171,22 @@ async function loadProvinces(): Promise<void> {
   provinceSelect.replaceChildren(provinceSelect.firstElementChild, ...options);
 }
 
+async function loadSellerName(): Promise<void> {
+  if (currentSeller === "0") {
+    currentSellerName = "";
+    return;
+  }
+
+  const seller = await usersService.getUserById(Number(currentSeller));
+
+  if (!seller) {
+    currentSellerName = "";
+    return;
+  }
+
+  currentSellerName = seller.name;
+}
+
 searchForm?.addEventListener("submit", async (event: SubmitEvent) => {
   event.preventDefault();
 
@@ -192,6 +211,10 @@ function updateFilterFeedback(): void {
 
   const parts: string[] = [];
 
+  if (currentSeller !== "0") {
+    parts.push(`Seller: ${currentSellerName || currentSeller}`);
+  }
+
   if (currentProvince !== "0" && provinceSelect instanceof HTMLSelectElement) {
     const selected = provinceSelect.selectedOptions[0];
     const provinceName = selected?.textContent ?? "All";
@@ -206,11 +229,7 @@ function updateFilterFeedback(): void {
     parts.push("Search: All");
   }
 
-  if (currentSeller !== "0") {
-    parts.push(`Seller: ${currentSeller}`);
-  }
-
-  feedback.textContent = parts.join(", ");
+  feedback.textContent = parts.join(". ");
 }
 
 function updateAuthMenu(): void {
@@ -244,7 +263,12 @@ function setupLogoutButton(): void {
   });
 }
 
-updateAuthMenu();
-setupLogoutButton();
-void loadProvinces();
-void getProperties(currentPage);
+async function init(): Promise<void> {
+  updateAuthMenu();
+  setupLogoutButton();
+  await loadProvinces();
+  await loadSellerName();
+  await getProperties(currentPage);
+}
+
+void init();

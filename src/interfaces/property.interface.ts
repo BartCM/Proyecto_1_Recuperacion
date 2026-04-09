@@ -1,4 +1,6 @@
-import { Town } from "./town.interface";
+import { Rating } from "./rating.interface";
+import type { Town } from "./town.interface";
+import type { User } from "./user.interface";
 
 export interface Property {
   id: number;
@@ -11,5 +13,9 @@ export interface Property {
   numBaths: number;
   mainPhoto: string;
   town: Town;
+  seller: User;
   mine?: boolean;
+  rated?: boolean;
+  totalRating?: number;
+  ratings?: Rating[];
 }
