@@ -37,11 +37,11 @@ const confirmNewPasswordInput = document.getElementById(
 
 let currentUser: User | null = null;
 
-function checkAuth(): void {
-  const isLogged = authService.checkToken();
+async function checkAuth(): Promise<void> {
+  const isLogged = await authService.checkToken();
 
   if (!isLogged) {
-    location.assign("index.html");
+    location.assign("login.html");
   }
 }
 
@@ -304,7 +304,7 @@ async function loadUserProfile(): Promise<void> {
 }
 
 async function init(): Promise<void> {
-  checkAuth();
+  await checkAuth();
   setupLogoutButton();
   await loadUserProfile();
 }

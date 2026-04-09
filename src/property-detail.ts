@@ -186,8 +186,8 @@ function loadMap(property: Property): void {
   });
 }
 
-function updateAuthMenu(): void {
-  const isLogged = authService.checkToken();
+async function updateAuthMenu(): Promise<void> {
+  const isLogged = await authService.checkToken();
 
   if (loginLink instanceof HTMLElement) {
     loginLink.classList.toggle("hidden", isLogged);
@@ -375,7 +375,7 @@ async function loadProperty(): Promise<void> {
     populatePropertyData(property);
     loadMap(property);
     await loadExistingRatings(property.id);
-    updateAuthMenu();
+    await updateAuthMenu();
     setupLogoutButton();
   } catch (error) {
     console.error("PROPERTY DETAIL ERROR:", error);

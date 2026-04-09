@@ -26,9 +26,14 @@ export class AuthService {
     await this.#http.post<unknown, RegisterData>(`${SERVER}/auth/register`, data);
   }
 
-  checkToken(): boolean {
-    return localStorage.getItem("token") !== null;
+  async checkToken(): Promise<boolean> {
+  try {
+    await this.#http.get<void>(`${SERVER}/auth/validate`);
+    return true;
+  } catch {
+    return false;
   }
+}
 
   logout(): void {
     localStorage.removeItem("token");

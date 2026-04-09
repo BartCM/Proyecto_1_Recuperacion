@@ -232,8 +232,8 @@ function updateFilterFeedback(): void {
   feedback.textContent = parts.join(". ");
 }
 
-function updateAuthMenu(): void {
-  const isLogged = authService.checkToken();
+async function updateAuthMenu(): Promise<void> {
+  const isLogged = await authService.checkToken();
 
   if (loginLink instanceof HTMLElement) {
     loginLink.classList.toggle("hidden", isLogged);
@@ -264,7 +264,7 @@ function setupLogoutButton(): void {
 }
 
 async function init(): Promise<void> {
-  updateAuthMenu();
+  await updateAuthMenu();
   setupLogoutButton();
   await loadProvinces();
   await loadSellerName();

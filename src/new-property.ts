@@ -31,9 +31,11 @@ let mapService: MapService | null = null;
 let marker: Feature<Point> | null = null;
 let towns: Town[] = [];
 
-function checkAuth(): void {
-  if (!authService.checkToken()) {
-    location.assign("index.html");
+async function checkAuth(): Promise<void> {
+  const isLogged = await authService.checkToken();
+
+  if (!isLogged) {
+    location.assign("login.html");
   }
 }
 
@@ -248,7 +250,11 @@ async function loadMap(): Promise<void> {
   marker = mapService.createMarker({latitude: coords.latitude,longitude: coords.longitude,});
 }
 
-checkAuth();
-setupLogoutButton();
-void loadProvinces();
-void loadMap();
+async function init(): Promise<void> {
+  await checkAuth();
+  setupLogoutButton();
+  await loadProvinces();
+  await loadMap();
+}
+
+void init();
