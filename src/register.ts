@@ -5,13 +5,23 @@ import type { RegisterData } from "./interfaces/register.interface";
 
 redirectIfLogged();
 
-const registerForm = document.getElementById("register-form") as HTMLFormElement | null;
+const registerForm = document.getElementById(
+  "register-form"
+) as HTMLFormElement | null;
 const nameInput = document.getElementById("name") as HTMLInputElement | null;
 const emailInput = document.getElementById("email") as HTMLInputElement | null;
-const passwordInput = document.getElementById("password") as HTMLInputElement | null;
-const repeatPasswordInput = document.getElementById("password-confirm") as HTMLInputElement | null;
-const avatarInput = document.getElementById("avatar") as HTMLInputElement | null;
-const imagePreview = document.getElementById("avatar-preview") as HTMLImageElement | null;
+const passwordInput = document.getElementById(
+  "password"
+) as HTMLInputElement | null;
+const repeatPasswordInput = document.getElementById(
+  "password-confirm"
+) as HTMLInputElement | null;
+const avatarInput = document.getElementById(
+  "avatar"
+) as HTMLInputElement | null;
+const imagePreview = document.getElementById(
+  "avatar-preview"
+) as HTMLImageElement | null;
 
 const authService = new AuthService();
 

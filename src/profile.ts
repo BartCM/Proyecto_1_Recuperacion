@@ -10,9 +10,15 @@ const profileName = document.getElementById("user-name");
 const profileEmail = document.getElementById("user-email");
 const profileAvatar = document.getElementById("avatar-image");
 
-const editNameInput = document.getElementById("name") as HTMLInputElement | null;
-const editEmailInput = document.getElementById("email") as HTMLInputElement | null;
-const avatarInput = document.getElementById("avatar-upload") as HTMLInputElement | null;
+const editNameInput = document.getElementById(
+  "name"
+) as HTMLInputElement | null;
+const editEmailInput = document.getElementById(
+  "email"
+) as HTMLInputElement | null;
+const avatarInput = document.getElementById(
+  "avatar-upload"
+) as HTMLInputElement | null;
 
 const editProfileButton = document.getElementById("edit-profile-btn");
 const changePasswordButton = document.getElementById("change-password-btn");
@@ -20,13 +26,17 @@ const avatarOverlay = document.getElementById("avatar-image-overlay");
 const logoutLink = document.getElementById("logout-link");
 const myPropertiesLink = document.getElementById("my-properties-link");
 
-const editProfileForm = document.getElementById("edit-profile-form") as HTMLFormElement | null;
+const editProfileForm = document.getElementById(
+  "edit-profile-form"
+) as HTMLFormElement | null;
 const changePasswordForm = document.getElementById(
   "change-password-form"
 ) as HTMLFormElement | null;
 
 const cancelEditProfileButton = document.getElementById("cancel-edit-profile");
-const cancelChangePasswordButton = document.getElementById("cancel-change-password");
+const cancelChangePasswordButton = document.getElementById(
+  "cancel-change-password"
+);
 
 const newPasswordInput = document.getElementById(
   "new-password"
@@ -180,7 +190,8 @@ avatarInput?.addEventListener("change", async () => {
       text: "Your avatar has been updated successfully",
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Could not update avatar";
+    const message =
+      error instanceof Error ? error.message : "Could not update avatar";
 
     await Swal.fire({
       icon: "error",
@@ -234,7 +245,8 @@ editProfileForm?.addEventListener("submit", async (event: SubmitEvent) => {
       text: "Your profile has been updated successfully",
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Could not update profile";
+    const message =
+      error instanceof Error ? error.message : "Could not update profile";
 
     await Swal.fire({
       icon: "error",
@@ -274,7 +286,8 @@ changePasswordForm?.addEventListener("submit", async (event: SubmitEvent) => {
       text: "Your password has been updated successfully",
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Could not update password";
+    const message =
+      error instanceof Error ? error.message : "Could not update password";
 
     await Swal.fire({
       icon: "error",

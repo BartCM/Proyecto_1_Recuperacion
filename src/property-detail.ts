@@ -26,10 +26,16 @@ const totalRatingElement = document.getElementById("total-rating");
 const totalStarsElement = document.getElementById("total-stars");
 const ratingsContainer = document.getElementById("ratings-container");
 const ratingTemplate = document.getElementById("rating-template");
-const ratingForm = document.getElementById("rating-form") as HTMLFormElement | null;
-const reviewCommentInput = document.getElementById("review-comment") as HTMLTextAreaElement | null;
+const ratingForm = document.getElementById(
+  "rating-form"
+) as HTMLFormElement | null;
+const reviewCommentInput = document.getElementById(
+  "review-comment"
+) as HTMLTextAreaElement | null;
 
-const mortgageForm = document.getElementById("mortgage-calculator") as HTMLFormElement | null;
+const mortgageForm = document.getElementById(
+  "mortgage-calculator"
+) as HTMLFormElement | null;
 const mortgageResult = document.getElementById("mortgage-result");
 const monthlyPaymentElement = document.getElementById("monthly-payment");
 const mortgagePriceInput = document.getElementById(
@@ -154,7 +160,7 @@ function populatePropertyData(property: Property): void {
     }
   }
 
-  if(sellerEmailElement instanceof HTMLElement) {
+  if (sellerEmailElement instanceof HTMLElement) {
     sellerEmailElement.textContent = property.seller.email ?? "";
   }
 

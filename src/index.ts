@@ -12,10 +12,18 @@ const logoutLink = document.getElementById("logout-link");
 
 const propertyListings = document.getElementById("property-listings");
 const cardTemplate = document.getElementById("property-card-template");
-const searchInput = document.getElementById("search-text") as HTMLInputElement | null;
-const provinceSelect = document.getElementById("province-filter") as HTMLSelectElement | null;
-const searchForm = document.getElementById("search-form") as HTMLFormElement | null;
-const loadMoreButton = document.getElementById("load-more-btn") as HTMLButtonElement | null;
+const searchInput = document.getElementById(
+  "search-text"
+) as HTMLInputElement | null;
+const provinceSelect = document.getElementById(
+  "province-filter"
+) as HTMLSelectElement | null;
+const searchForm = document.getElementById(
+  "search-form"
+) as HTMLFormElement | null;
+const loadMoreButton = document.getElementById(
+  "load-more-btn"
+) as HTMLButtonElement | null;
 
 const propertiesService = new PropertiesService();
 const provincesService = new ProvincesService();

@@ -11,16 +11,30 @@ import { ProvincesService } from "./services/provinces.service";
 import { AuthService } from "./services/auth.service";
 import { generateTitle, translateToEnglish } from "./ai-tools";
 
-const propertyForm = document.getElementById("property-form") as HTMLFormElement | null;
-const mainPhotoInput = document.getElementById("mainPhoto") as HTMLInputElement | null;
-const imagePreview = document.getElementById("image-preview") as HTMLImageElement | null;
-const provincesSelect = document.getElementById("province") as HTMLSelectElement | null;
+const propertyForm = document.getElementById(
+  "property-form"
+) as HTMLFormElement | null;
+const mainPhotoInput = document.getElementById(
+  "mainPhoto"
+) as HTMLInputElement | null;
+const imagePreview = document.getElementById(
+  "image-preview"
+) as HTMLImageElement | null;
+const provincesSelect = document.getElementById(
+  "province"
+) as HTMLSelectElement | null;
 const townsSelect = document.getElementById("town") as HTMLSelectElement | null;
 
-const descriptionInput = document.getElementById("description") as HTMLTextAreaElement | null;
+const descriptionInput = document.getElementById(
+  "description"
+) as HTMLTextAreaElement | null;
 const titleInput = document.getElementById("title") as HTMLInputElement | null;
-const translateButton = document.getElementById("translate-button") as HTMLButtonElement | null;
-const generateButton = document.getElementById("generate-button") as HTMLButtonElement | null;
+const translateButton = document.getElementById(
+  "translate-button"
+) as HTMLButtonElement | null;
+const generateButton = document.getElementById(
+  "generate-button"
+) as HTMLButtonElement | null;
 const logoutLink = document.getElementById("logout-link");
 
 const propertiesService = new PropertiesService();
@@ -218,7 +232,10 @@ async function loadProvinces(): Promise<void> {
     return;
   }
 
-  provincesSelect.replaceChildren(provincesSelect.firstElementChild, ...options);
+  provincesSelect.replaceChildren(
+    provincesSelect.firstElementChild,
+    ...options
+  );
 }
 
 async function loadTowns(idProvince: number): Promise<void> {
@@ -245,9 +262,15 @@ async function loadTowns(idProvince: number): Promise<void> {
 async function loadMap(): Promise<void> {
   const coords = (await MyGeolocation.getLocation()) as GeolocationCoordinates;
 
-  mapService = new MapService({ latitude: coords.latitude, longitude: coords.longitude },"map");
+  mapService = new MapService(
+    { latitude: coords.latitude, longitude: coords.longitude },
+    "map"
+  );
 
-  marker = mapService.createMarker({latitude: coords.latitude,longitude: coords.longitude,});
+  marker = mapService.createMarker({
+    latitude: coords.latitude,
+    longitude: coords.longitude,
+  });
 }
 
 async function init(): Promise<void> {

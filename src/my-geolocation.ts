@@ -1,6 +1,5 @@
 import { Coordinates } from "./interfaces/coordinates.interface";
 
-
 export class MyGeolocation {
   static getLocation(): Promise<Coordinates> {
     return new Promise((resolve, reject) => {

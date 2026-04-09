@@ -32,7 +32,9 @@ export class UsersService {
   }
 
   async getUserById(id: number): Promise<User | null> {
-    const resp = await this.#http.get<SingleUserResponse>(`${SERVER}/users/${id}`);
+    const resp = await this.#http.get<SingleUserResponse>(
+      `${SERVER}/users/${id}`
+    );
     return resp?.user ?? null;
   }
 

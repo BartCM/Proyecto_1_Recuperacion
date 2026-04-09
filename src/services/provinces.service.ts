@@ -3,7 +3,6 @@ import { Http } from "../http.class";
 import { Province } from "../interfaces/province.interface";
 import { Town } from "../interfaces/town.interface";
 
-
 export class ProvincesService {
   #http: Http = new Http();
 

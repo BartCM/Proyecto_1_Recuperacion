@@ -5,9 +5,13 @@ import Swal from "sweetalert2";
 
 redirectIfLogged();
 
-const loginForm = document.getElementById("login-form") as HTMLFormElement | null;
+const loginForm = document.getElementById(
+  "login-form"
+) as HTMLFormElement | null;
 const emailInput = document.getElementById("email") as HTMLInputElement | null;
-const passwordInput = document.getElementById("password") as HTMLInputElement | null;
+const passwordInput = document.getElementById(
+  "password"
+) as HTMLInputElement | null;
 
 const authService = new AuthService();
 
@@ -29,7 +33,9 @@ loginForm?.addEventListener("submit", async (event: SubmitEvent) => {
   }
 
   if (password.length < 4) {
-    passwordInput.setCustomValidity("La contraseña debe tener al menos 4 caracteres");
+    passwordInput.setCustomValidity(
+      "La contraseña debe tener al menos 4 caracteres"
+    );
     passwordInput.reportValidity();
     return;
   }
@@ -61,7 +67,7 @@ loginForm?.addEventListener("submit", async (event: SubmitEvent) => {
       return;
     }
 
-      await Swal.fire({
+    await Swal.fire({
       icon: "error",
       title: "Login error",
       text: "Error al iniciar sesión",

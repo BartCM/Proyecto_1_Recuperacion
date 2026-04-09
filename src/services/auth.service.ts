@@ -4,7 +4,6 @@ import type { LoginResponse } from "../interfaces/login-response.interface";
 import type { LoginData } from "../interfaces/login.interface";
 import type { RegisterData } from "../interfaces/register.interface";
 
-
 export class AuthService {
   #http: Http = new Http();
 
@@ -23,17 +22,20 @@ export class AuthService {
   }
 
   async register(data: RegisterData): Promise<void> {
-    await this.#http.post<unknown, RegisterData>(`${SERVER}/auth/register`, data);
+    await this.#http.post<unknown, RegisterData>(
+      `${SERVER}/auth/register`,
+      data
+    );
   }
 
   async checkToken(): Promise<boolean> {
-  try {
-    await this.#http.get<void>(`${SERVER}/auth/validate`);
-    return true;
-  } catch {
-    return false;
+    try {
+      await this.#http.get<void>(`${SERVER}/auth/validate`);
+      return true;
+    } catch {
+      return false;
+    }
   }
-}
 
   logout(): void {
     localStorage.removeItem("token");

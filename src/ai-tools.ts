@@ -3,7 +3,6 @@ declare const LanguageDetector: any;
 declare const Translator: any;
 declare const Summarizer: any;
 
-
 export async function detectLanguage(text: string): Promise<string> {
   const detector = await LanguageDetector.create();
   const results = await detector.detect(text);
@@ -14,8 +13,12 @@ export async function detectLanguage(text: string): Promise<string> {
 
   const firstResult = results[0];
 
-  if (typeof firstResult === "object" && firstResult !== null && 
-        "detectedLanguage" in firstResult && typeof firstResult.detectedLanguage === "string") {
+  if (
+    typeof firstResult === "object" &&
+    firstResult !== null &&
+    "detectedLanguage" in firstResult &&
+    typeof firstResult.detectedLanguage === "string"
+  ) {
     return firstResult.detectedLanguage;
   }
 
