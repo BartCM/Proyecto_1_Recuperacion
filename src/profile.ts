@@ -109,17 +109,15 @@ function populateUserData(user: User): void {
 function updateProfileVisibility(user: User): void {
   const isMe = user.me === true;
 
-  if (!isMe) {
-    editProfileButton?.classList.add("hidden");
-    changePasswordButton?.classList.add("hidden");
+  editProfileButton?.classList.toggle("hidden", !isMe);
+  changePasswordButton?.classList.toggle("hidden", !isMe);
 
-    if (avatarOverlay instanceof HTMLElement) {
-      avatarOverlay.classList.add("hidden");
-    }
+  if (avatarOverlay instanceof HTMLElement) {
+    avatarOverlay.classList.toggle("hidden", !isMe);
+  }
 
-    if (avatarInput instanceof HTMLInputElement) {
-      avatarInput.disabled = true;
-    }
+  if (avatarInput instanceof HTMLInputElement) {
+    avatarInput.disabled = !isMe;
   }
 }
 
@@ -260,6 +258,15 @@ changePasswordForm?.addEventListener("submit", async (event: SubmitEvent) => {
   event.preventDefault();
 
   if (!newPasswordInput || !confirmNewPasswordInput) {
+    return;
+  }
+
+  if (newPasswordInput.value.length < 4) {
+    await Swal.fire({
+      icon: "error",
+      title: "Password error",
+      text: "Password must contain at least 4 characters",
+    });
     return;
   }
 
