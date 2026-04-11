@@ -3,6 +3,7 @@ import { AuthService } from "./services/auth.service";
 import { MapService } from "./services/map.service";
 import type { Property } from "./interfaces/property.interface";
 import type { Rating } from "./interfaces/rating.interface";
+import Swal from "sweetalert2";
 
 const propertiesService = new PropertiesService();
 const authService = new AuthService();
@@ -272,14 +273,22 @@ ratingForm?.addEventListener("submit", async (event: SubmitEvent) => {
   const ratingValue = getSelectedRatingValue();
 
   if (ratingValue === null) {
-    alert("You must select a rating");
+    await Swal.fire({
+      icon: "error",
+      title: "Rating error",
+      text: "You must select a rating",
+    });
     return;
   }
 
   const comment = reviewCommentInput.value.trim();
 
   if (comment.length === 0) {
-    alert("Comment cannot be empty");
+    await Swal.fire({
+      icon: "error",
+      title: "Comment error",
+      text: "Comment cannot be empty",
+    });
     return;
   }
 
@@ -317,9 +326,20 @@ ratingForm?.addEventListener("submit", async (event: SubmitEvent) => {
 
     currentProperty.rated = true;
     ratingForm.reset();
+
+    await Swal.fire({
+      icon: "success",
+      title: "Rating added",
+      text: "Your comment has been published",
+    });
   } catch (error) {
     console.error(error);
-    alert("Could not insert the rating");
+
+    await Swal.fire({
+      icon: "error",
+      title: "Rating error",
+      text: "Could not insert the rating",
+    });
   }
 });
 
